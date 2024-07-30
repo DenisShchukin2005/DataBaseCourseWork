@@ -51,10 +51,24 @@ class Product
     #[ORM\ManyToMany(targetEntity: Bucket::class, mappedBy: 'products')]
     private Collection $buckets;
 
+    /**
+     * @var Collection<int, Company>
+     */
+    #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'products')]
+    private Collection $companies;
+
+    /**
+     * @var Collection<int, Shop>
+     */
+    #[ORM\ManyToMany(targetEntity: Shop::class, mappedBy: 'products')]
+    private Collection $shops;
+
     public function __construct()
     {
         $this->orders = new ArrayCollection();
         $this->buckets = new ArrayCollection();
+        $this->companies = new ArrayCollection();
+        $this->shops = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -195,6 +209,60 @@ class Product
     {
         if ($this->buckets->removeElement($bucket)) {
             $bucket->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Company>
+     */
+    public function getCompanies(): Collection
+    {
+        return $this->companies;
+    }
+
+    public function addCompany(Company $company): static
+    {
+        if (!$this->companies->contains($company)) {
+            $this->companies->add($company);
+            $company->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCompany(Company $company): static
+    {
+        if ($this->companies->removeElement($company)) {
+            $company->removeProduct($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Shop>
+     */
+    public function getShops(): Collection
+    {
+        return $this->shops;
+    }
+
+    public function addShop(Shop $shop): static
+    {
+        if (!$this->shops->contains($shop)) {
+            $this->shops->add($shop);
+            $shop->addProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeShop(Shop $shop): static
+    {
+        if ($this->shops->removeElement($shop)) {
+            $shop->removeProduct($this);
         }
 
         return $this;
